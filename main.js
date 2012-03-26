@@ -23,8 +23,8 @@ var circle1 = {
 };
 
 var circle2 = {
-    rate: 329,
-    radius: 100,
+    rate: 310,
+    radius: 64,
     x: 420,
     y: 0
 };
@@ -32,7 +32,8 @@ var circle2 = {
 var config = {
     armLength: 250,
     showDebug: false,
-    doubleLength: true,
+    doubleLength: false,
+    extendedArm: true,
     clear: function () {
         pctx.clearRect(0, 0, 600, 600);
     }
@@ -63,6 +64,7 @@ function init() {
 
     gui.add(config, 'armLength').min(250).max(500).onFinishChange(config.clear);
     gui.add(config, 'doubleLength').onFinishChange(config.clear);
+    gui.add(config, 'extendedArm').onFinishChange(config.clear);
     gui.add(config, 'showDebug');
     gui.add(config, 'clear');
 }
@@ -117,11 +119,12 @@ function step(time, delta) {
         ctx.stroke();
     }
 
+    var A2;
     if (config.doubleLength) {
-        var A2 = Vect.mid(A, C);
+        A2 = Vect.mid(A, C);
         var B2 = Vect.mid(B, C);
-        A2 = Vect.mid(A2, C);
-        B2 = Vect.mid(B2, C);
+        //A2 = Vect.mid(A2, C);
+        //B2 = Vect.mid(B2, C);
         var I2 = Vect.mid(A2, B2);
         var l2 = A2.distTo(I2);
         C2 = new Vect(
@@ -130,20 +133,32 @@ function step(time, delta) {
         );
         C2.rot(-o);
         C2.add(A2);
-        var D = Vect.sub(C2, A2);
-        D.normalise();
-        D.x *= 30;
-        D.y *= 30;
         pen = C2;
 
         if (config.showDebug) {
-            ctx.stroke();
             ctx.beginPath();
             ctx.strokeStyle = 'blue';
             ctx.moveTo(A2.x, A2.y);
             ctx.lineTo(C2.x, C2.y);
 
             ctx.moveTo(B2.x, B2.y);
+            ctx.lineTo(C2.x, C2.y);
+            ctx.stroke();
+        }
+    }
+
+    if (config.extendedArm) {
+        var C2 = pen;
+        var E = Vect.sub(pen, A2 || A);
+        E.normalise();
+        E.x *= config.armLength / 3;
+        E.y *= config.armLength / 3;
+        var C3 = Vect.add(pen, E);
+        pen = C3;
+        if (config.showDebug) {
+            ctx.beginPath();
+            ctx.strokeStyle = 'black';
+            ctx.moveTo(pen.x, pen.y);
             ctx.lineTo(C2.x, C2.y);
             ctx.stroke();
         }
