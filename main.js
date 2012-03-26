@@ -1,8 +1,15 @@
 /*jshint browser:true, white:true*/
 /*globals Vect:false */
-var requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame ||
-                        window.webkitRequestAnimationFrame || window.msRequestAnimationFrame ||
-                        window.oRequestAnimationFrame;
+window.requestAnimationFrame = (function () {
+    return  window.requestAnimationFrame       ||
+            window.webkitRequestAnimationFrame ||
+            window.mozRequestAnimationFrame    ||
+            window.oRequestAnimationFrame      ||
+            window.msRequestAnimationFrame     ||
+            function (callback) {
+                window.setTimeout(callback, 1000 / 60);
+            };
+})();
 
 var x, y;
 var delta, time = Date.now();
