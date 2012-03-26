@@ -1,7 +1,8 @@
 /*jshint browser:true, white:true*/
 /*globals Vect:false */
 var requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame ||
-                        window.webkitRequestAnimationFrame || window.msRequestAnimationFrame;
+                        window.webkitRequestAnimationFrame || window.msRequestAnimationFrame ||
+                        window.oRequestAnimationFrame;
 
 var x, y;
 var delta, time = Date.now();
