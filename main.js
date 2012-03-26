@@ -17,21 +17,22 @@ var canvas, paper, ctx, pctx;
 
 var circle1 = {
     rate: 300,
-    radius: 90,
-    x: 120,
+    radius: 100,
+    x: 140,
     y: 0
 };
 
 var circle2 = {
-    rate: 389,
-    radius: 90,
-    x: 470,
+    rate: 329,
+    radius: 100,
+    x: 420,
     y: 0
 };
 
 var config = {
-    armLength: 350,
+    armLength: 250,
     showDebug: false,
+    doubleLength: true,
     clear: function () {
         pctx.clearRect(0, 0, 600, 600);
     }
@@ -50,17 +51,18 @@ function init() {
 
     var f1 = gui.addFolder('Circle 1');
     f1.add(circle1, 'rate').min(100).max(600).onFinishChange(config.clear);
-    f1.add(circle1, 'radius').min(20).max(100).onFinishChange(config.clear);
+    f1.add(circle1, 'radius').min(0).max(100).onFinishChange(config.clear);
     f1.add(circle1, 'x').min(0).max(300).onFinishChange(config.clear);
     f1.add(circle1, 'y').min(0).max(300).onFinishChange(config.clear);
 
     var f2 = gui.addFolder('Circle 2');
     f2.add(circle2, 'rate').min(100).max(600).onFinishChange(config.clear);
-    f2.add(circle2, 'radius').min(20).max(100).onFinishChange(config.clear);
+    f2.add(circle2, 'radius').min(0).max(100).onFinishChange(config.clear);
     f2.add(circle2, 'x').min(300).max(600).onFinishChange(config.clear);
     f2.add(circle2, 'y').min(0).max(300).onFinishChange(config.clear);
 
     gui.add(config, 'armLength').min(250).max(500).onFinishChange(config.clear);
+    gui.add(config, 'doubleLength').onFinishChange(config.clear);
     gui.add(config, 'showDebug');
     gui.add(config, 'clear');
 }
@@ -87,6 +89,8 @@ function step(time, delta) {
     C.rot(-o);
     C.add(A);
 
+    var pen = C;
+
     if (config.showDebug) {
         ctx.beginPath();
         ctx.arc(
@@ -111,14 +115,47 @@ function step(time, delta) {
         ctx.moveTo(B.x, B.y);
         ctx.lineTo(C.x, C.y);
         ctx.stroke();
-        ctx.strokeStyle = 'black';
     }
+
+    if (config.doubleLength) {
+        var A2 = Vect.mid(A, C);
+        var B2 = Vect.mid(B, C);
+        A2 = Vect.mid(A2, C);
+        B2 = Vect.mid(B2, C);
+        var I2 = Vect.mid(A2, B2);
+        var l2 = A2.distTo(I2);
+        C2 = new Vect(
+            -Math.sqrt((config.armLength * config.armLength) - (l2 * l2)),
+            l2
+        );
+        C2.rot(-o);
+        C2.add(A2);
+        var D = Vect.sub(C2, A2);
+        D.normalise();
+        D.x *= 30;
+        D.y *= 30;
+        pen = C2;
+
+        if (config.showDebug) {
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.strokeStyle = 'blue';
+            ctx.moveTo(A2.x, A2.y);
+            ctx.lineTo(C2.x, C2.y);
+
+            ctx.moveTo(B2.x, B2.y);
+            ctx.lineTo(C2.x, C2.y);
+            ctx.stroke();
+        }
+    }
+
+    ctx.strokeStyle = 'black';
 
     pctx.beginPath();
     pctx.moveTo(x, y);
     pctx.lineTo(
-        x = C.x,
-        y = C.y
+        x = pen.x,
+        y = pen.y
     );
     pctx.stroke();
     ctx.drawImage(paper, 0, 0);
