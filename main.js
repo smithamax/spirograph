@@ -1,18 +1,11 @@
 /*jshint browser:true, white:true*/
 /*globals Vect:false */
-var requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame ||  
-                        window.webkitRequestAnimationFrame || window.msRequestAnimationFrame;  
-
-var canvas = document.getElementById('screen');
-var paper = document.createElement('canvas');
-paper.width = 600;
-paper.height = 600;
-
-var ctx = canvas.getContext('2d');
-var pctx = paper.getContext('2d');
+var requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame ||
+                        window.webkitRequestAnimationFrame || window.msRequestAnimationFrame;
 
 var x, y;
 var delta, time = Date.now();
+var canvas, paper, ctx, pctx;
 
 var circle1 = {
     rate: 300,
@@ -36,23 +29,33 @@ var config = {
     }
 };
 
-var gui = new dat.GUI();
+function init() {
+    canvas = document.getElementById('screen');
+    paper = document.createElement('canvas');
+    paper.width = 600;
+    paper.height = 600;
 
-var f1 = gui.addFolder('Circle 1');
-f1.add(circle1, 'rate').min(100).max(600).onFinishChange(config.clear);
-f1.add(circle1, 'radius').min(20).max(100).onFinishChange(config.clear);
-f1.add(circle1, 'x').min(0).max(300).onFinishChange(config.clear);
-f1.add(circle1, 'y').min(0).max(300).onFinishChange(config.clear);
+    ctx = canvas.getContext('2d');
+    pctx = paper.getContext('2d');
 
-var f2 = gui.addFolder('Circle 2');
-f2.add(circle2, 'rate').min(100).max(600).onFinishChange(config.clear);
-f2.add(circle2, 'radius').min(20).max(100).onFinishChange(config.clear);
-f2.add(circle2, 'x').min(300).max(600).onFinishChange(config.clear);
-f2.add(circle2, 'y').min(0).max(300).onFinishChange(config.clear);
+    var gui = new dat.GUI();
 
-gui.add(config, 'armLength').min(250).max(500).onFinishChange(config.clear);
-gui.add(config, 'showDebug');
-gui.add(config, 'clear');
+    var f1 = gui.addFolder('Circle 1');
+    f1.add(circle1, 'rate').min(100).max(600).onFinishChange(config.clear);
+    f1.add(circle1, 'radius').min(20).max(100).onFinishChange(config.clear);
+    f1.add(circle1, 'x').min(0).max(300).onFinishChange(config.clear);
+    f1.add(circle1, 'y').min(0).max(300).onFinishChange(config.clear);
+
+    var f2 = gui.addFolder('Circle 2');
+    f2.add(circle2, 'rate').min(100).max(600).onFinishChange(config.clear);
+    f2.add(circle2, 'radius').min(20).max(100).onFinishChange(config.clear);
+    f2.add(circle2, 'x').min(300).max(600).onFinishChange(config.clear);
+    f2.add(circle2, 'y').min(0).max(300).onFinishChange(config.clear);
+
+    gui.add(config, 'armLength').min(250).max(500).onFinishChange(config.clear);
+    gui.add(config, 'showDebug');
+    gui.add(config, 'clear');
+}
 
 function CircVect(circ) {
     return new Vect(
@@ -113,9 +116,14 @@ function step(time, delta) {
     ctx.drawImage(paper, 0, 0);
 }
 
-(function loopsy() {
+function loopsy() {
     delta = Date.now() - time;
     time = time + delta;
     step(time, delta);
     requestAnimationFrame(loopsy);
-})();
+}
+
+window.onload = function () {
+    init();
+    loopsy();
+};
