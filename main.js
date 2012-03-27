@@ -167,7 +167,7 @@ function step(time, delta) {
     ctx.strokeStyle = 'black';
 
     pctx.beginPath();
-    pctx.moveTo(x, y);
+    pctx.moveTo(x || pen.x, y || pen.y);
     pctx.lineTo(
         x = pen.x,
         y = pen.y
