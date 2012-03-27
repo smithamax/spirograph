@@ -1,5 +1,5 @@
 /*jshint browser:true, white:true*/
-/*globals Vect:false */
+/*globals Vect:false, dat:false */
 window.requestAnimationFrame = (function () {
     return  window.requestAnimationFrame       ||
             window.webkitRequestAnimationFrame ||
@@ -119,7 +119,7 @@ function step(time, delta) {
         ctx.stroke();
     }
 
-    var A2;
+    var A2, C2;
     if (config.doubleLength) {
         A2 = Vect.mid(A, C);
         var B2 = Vect.mid(B, C);
@@ -148,7 +148,7 @@ function step(time, delta) {
     }
 
     if (config.extendedArm) {
-        var C2 = pen;
+        C2 = pen;
         var E = Vect.sub(pen, A2 || A);
         E.normalise();
         E.x *= config.armLength / 3;
@@ -180,7 +180,7 @@ function loopsy() {
     delta = Date.now() - time;
     time = time + delta;
     step(time, delta);
-    requestAnimationFrame(loopsy);
+    window.requestAnimationFrame(loopsy);
 }
 
 window.onload = function () {
